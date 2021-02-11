@@ -68,7 +68,7 @@ public class Q17406 {
 		M = Integer.parseInt(st.nextToken());
 		K = Integer.parseInt(st.nextToken());
 		
-		int[][] arr = new int[N+1][M+1];
+		arr = new int[N+1][M+1];
 		for (int i = 1; i <= N; i++) {
 			StringTokenizer st2 = new StringTokenizer(br.readLine());
 			for (int j = 1; j <= M; j++) {
@@ -82,7 +82,6 @@ public class Q17406 {
 		sumArr = new int[K][3];
 		
 		for (int t = 0; t < K; t++) {
-			
 			StringTokenizer st3 = new StringTokenizer(br.readLine());
 			int r = Integer.parseInt(st3.nextToken());
 			int c = Integer.parseInt(st3.nextToken());
