@@ -11,56 +11,102 @@ import java.util.StringTokenizer;
 
 public class Q17406 {
 	
-	static int N ;
-	static int M ;
-	static int K ;
-	static int[][] sumArr;
+	static int N,M,K,min = Integer.MAX_VALUE;
 	static int[][] arr;
 	
+	public static class pInfo {
+		int r,c,s;
 
-	private static void makePermutation(int toSelect, int[][] selected, boolean[][] visited) {
-		if(toSelect == K) {
-			for (int i = 0; i <K; i++) {
-				rotation(arr, selected[i][0], selected[i][1], selected[i][1]);
-			}
-			System.out.println();
+		public pInfo(int r, int c, int s) {
+			super();
+			this.r = r;
+			this.c = c;
+			this.s = s;
+		}
+		
+	}
+	
+
+	private static void permu(int idx, List<pInfo> list, boolean[] vs, pInfo[] temp) {
+		
+		if(idx==K) {
+			rotation(temp);
 			return;
 		}
-		for(int i=0; i<sumArr.length; i++) {
-			if(!visited[i][0]&&!visited[i][0]&&!visited[i][0]) {
-				visited[i][0] =true;
-				visited[i][1] = true;
-				visited[i][2] = true;
-				selected[toSelect][0]=sumArr[i][0];
-				selected[toSelect][1]=sumArr[i][1];
-				selected[toSelect][2]=sumArr[i][2];
-				makePermutation(toSelect + 1 , selected, visited);
-				visited[i][0] = false;
-				visited[i][1] = false;
-				visited[i][2] = false;
+		
+		for (int j = 0; j < K; j++) {
+			if(!vs[j]) {
+				vs[j] = true;
+				temp[idx] = list.get(j);
+				permu(idx+1,list,vs,temp);
+				vs[j] = false;
 			}
 		}
 	}
 	
-	public static void rotation(int[][] arr, int n1, int n2, int n3, int n4, int idx) {
+	private static void rotation(pInfo[] temp) {
+		int[][] rotArr = copy(arr);
 		
-		for (int t = 0; t < idx; t++) {
-			//N = 5 M =6
-			int[] top = {n1,n2}; //1 2
-			int[] bottom = {n3,n4}; // 5 6
-			int temp = arr[bottom[0]][bottom[1]]; //1,6 = 5
+		for (int i = 0; i < temp.length; i++) {
+			int r = temp[i].r;
+			int c = temp[i].c;
+			int s = temp[i].s;
 			
-			for (int i = bottom[0]-1; i >= top[0] ; i--) arr[i+1][bottom[1]] = arr[i][bottom[1]]; // 4~1
-			for (int i = bottom[1]-1; i >= top[1] ; i--) arr[top[0]][i+1] = arr[top[0]][i];
-			for (int i = top[0]; i < bottom[0] ; i++) arr[i][top[1]] = arr[i+1][top[1]];
-			for (int i = top[1]; i < bottom[1] ; i++) arr[bottom[0]][i] = arr[bottom[0]][i+1];
+			int topRow=r-s ,topCol=c-s ,botRow=r+s ,botCol = c+s;
+			while(topRow!=botRow && topCol!=botCol) {
+				int store = rotArr[topRow][topCol]; //가장 첫번째 원소 저장
+				
+				//왼쪽세로
+				for (int j = 0; j < botRow-topRow; j++) {
+					rotArr[topRow+j][topCol] = rotArr[topRow+j+1][topCol];
+				}
+				//아래가로
+				for (int j = 0; j < botCol-topCol; j++) {
+					rotArr[botRow][topCol+j] = rotArr[botRow][topCol+j+1];
+				}
+				//오른쪽세로
+				for (int j = 0; j < botRow-topRow; j++) {
+					rotArr[botRow-j][botCol] = rotArr[botRow-j-1][botCol];
+				}
+				//위가로
+				for (int j = 0; j < botCol-topCol; j++) {
+					rotArr[topRow][botCol-j] = rotArr[topRow][botCol-j-1];
+				}
+				
+				rotArr[topRow][topCol+1] = store;
+				topRow++; topCol++; botRow--; botCol--;
 
-			arr[bottom[0]][bottom[1]-1] = temp;
-			n1++; n2++; n3--; n4--;
+			}
 		}
-			
+		
+		calculate(rotArr);
 	}
-	
+
+	private static void calculate(int[][] rotArr) {
+		int rowMin = Integer.MAX_VALUE;
+		
+		for (int i = 1; i <= N; i++) {
+			int sum = 0;
+			for (int j = 1; j <= M; j++) {
+				sum += rotArr[i][j];
+			}
+			if(sum<rowMin) rowMin = sum;
+		}
+		
+		if(min>rowMin) min = rowMin;
+	}
+
+	private static int[][] copy(int[][] copyArr) {
+		copyArr = new int[N+1][M+1];
+		
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= M; j++) {
+				copyArr[i][j] = arr[i][j];
+			}
+		}
+		return copyArr;
+	}
+
 	public static void main(String[] args) throws IOException {
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
@@ -76,39 +122,14 @@ public class Q17406 {
 			}
 		}
 		
-		int min = 0;
-		int sum = 0;
-		List<Integer> list = new ArrayList<>();
-		sumArr = new int[K][3];
-		
-		for (int t = 0; t < K; t++) {
-			StringTokenizer st3 = new StringTokenizer(br.readLine());
-			int r = Integer.parseInt(st3.nextToken());
-			int c = Integer.parseInt(st3.nextToken());
-			int s = Integer.parseInt(st3.nextToken());
-			sumArr[t][0] =  r;
-			sumArr[t][1] =  c;
-			sumArr[t][2] =  s;
-		}	
-		
-		makePermutation(0, new int[K][3], new boolean[K][3]);
-		for (int i = 0; i < sumArr.length; i++) {
-			rotation(arr,r-s,c-s,r+s,c+s,s);
-			
-			for (int i = 1; i <= N; i++) {
-				for (int j = 1; j <= M; j++) {
-					sum += arr[i][j];
-				}
-				if(i==1) min = sum;
-				if(min>sum) min = sum;
-				sum = 0;
-			}
-			list.add(min);
+		List<pInfo> list = new ArrayList<>();
+		for (int i = 0; i < K; i++) {
+			st = new StringTokenizer(br.readLine());
+			list.add(new pInfo(Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken()), Integer.parseInt(st.nextToken())));
 		}
-	
-		Collections.sort(list);
-		System.out.println(list.get(0));
 		
+		permu(0,list,new boolean[K], new pInfo[K]);
 		
+		System.out.println(min);
 	}
 }
