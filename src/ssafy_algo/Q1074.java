@@ -11,6 +11,7 @@ public class Q1074 {
 	static int N , size, result;
 	
 	public static void zet(int row, int col, int size) {
+		
 		if( size == 2) {
 			if(r<row+size && r>=row && c<col+size && c>=col) {
 				if(r==row && c==col) result += 0;
