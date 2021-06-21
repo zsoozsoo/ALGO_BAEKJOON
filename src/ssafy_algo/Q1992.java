@@ -3,7 +3,6 @@ package ssafy_algo;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
 
 public class Q1992 {
 	
@@ -29,7 +28,7 @@ public class Q1992 {
 	}
 
 	private static void quardTree(int row, int col, int size) {
-		
+		System.out.println(row+" "+col+" "+size);
 		boolean check = false;
 		int idx = arr[row][col];
 		
@@ -55,16 +54,3 @@ public class Q1992 {
 		sb.append(")");
 	}
 }
-© 2021 GitHub, Inc.
-Terms
-Privacy
-Security
-Status
-Docs
-Contact GitHub
-Pricing
-API
-Training
-Blog
-About
-Loading complete
